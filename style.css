@@ -1,0 +1,428 @@
+/* Basic Reset & Font */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: #e0e0e0;
+    padding: 20px; /* Add padding around the main container */
+
+    /* Background Effect */
+    background-color: #080808;
+    background-image:
+        radial-gradient(ellipse at center, rgba(200, 200, 200, 0.12) 0%, rgba(200, 200, 200, 0) 70%),
+        radial-gradient(ellipse at center, rgba(220, 220, 220, 0.1) 0%, rgba(220, 220, 220, 0) 65%),
+        linear-gradient(135deg, #111 0%, #000 100%);
+    background-size:
+        150% 150%, 200% 200%, 100% 100%;
+    background-position:
+        0% 0%, 50% 50%, 0% 0%;
+    animation: causticsShift 30s linear infinite alternate;
+    overflow-x: hidden;
+}
+
+/* Keyframes for caustics animation */
+@keyframes causticsShift {
+    0% { background-position: 0% 0%, 50% 50%, 0% 0%; }
+    25% { background-position: 40% 50%, 80% 30%, 0% 0%; }
+    50% { background-position: 20% 80%, 30% 60%, 0% 0%; }
+    75% { background-position: 60% 10%, 10% 40%, 0% 0%; }
+    100% { background-position: 0% 50%, 50% 0%, 0% 0%; }
+}
+
+/* Main Layout Container */
+.main-layout-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 25px;
+    width: 100%;
+    max-width: 1050px; /* Adjust as needed for combined width */
+    position: relative;
+}
+
+/* Base Panel Styling (Common to Quiz and High Scores) */
+.quiz-container,
+#high-scores-area {
+    background-color: rgba(30, 30, 30, 0.9);
+    border: 1px solid #333;
+    border-radius: 15px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    position: relative;
+    z-index: 1;
+    transition: max-height 0.4s ease-in-out, min-height 0.4s ease-in-out, padding 0.3s ease-out, width 0.3s ease-out;
+    overflow: hidden;
+    /* Use the font scale factor defined in quiz-container by JS */
+    --font-scale-factor: 1;
+    /* Apply same padding */
+    padding: calc(30px * var(--font-scale-factor)) calc(40px * var(--font-scale-factor));
+    flex: 0 0 auto; /* Don't grow or shrink */
+}
+
+/* Specific Sizing for Quiz Container */
+.quiz-container {
+    width: 100%;
+    max-width: 650px;
+    text-align: center;
+    min-height: 300px;
+}
+
+/* Specific Sizing for High Score Area */
+#high-scores-area {
+    width: 100%;
+    max-width: 300px; /* Adjust if needed */
+    text-align: left; /* Keep text left-aligned */
+    min-height: 300px; /* Match quiz container's min-height if desired */
+}
+
+
+/* Quiz Container Shrinking State */
+.quiz-container.shrinking {
+    max-height: 70px;
+    min-height: 70px !important;
+    padding-top: calc(10px * var(--font-scale-factor)); /* Adjust padding when shrunk */
+    padding-bottom: calc(10px * var(--font-scale-factor));
+}
+
+/* Screen Management & Basic Fade (Inside Quiz Container) */
+.screen { display: none; animation: fadeIn 0.5s ease-out forwards; }
+.screen.active { display: block; }
+.screen.fade-out { animation: fadeOut 0.4s ease-in forwards; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-15px); } }
+
+/* Q/A Container */
+.q-a-container {
+    opacity: 1;
+    transform: translateX(0);
+    padding-bottom: 10px;
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+
+
+/* --- High Score Panel Specific Styling --- */
+#high-scores-area h2 {
+    color: #f5f5f5; /* Match question text color */
+    font-size: calc(1.4em * var(--font-scale-factor)); /* Match question text size */
+    margin-bottom: calc(25px * var(--font-scale-factor)); /* Match question text margin */
+    text-align: center; /* Center the "High Scores" title */
+    border-bottom: 1px solid #444;
+    padding-bottom: calc(12px * var(--font-scale-factor));
+    transition: font-size 0.3s ease-out, margin-bottom 0.3s ease-out, padding-bottom 0.3s ease-out, color 0.3s ease-out;
+}
+
+/* High Score Entry Styling */
+.high-score-entry {
+    display: flex; flex-direction: column; align-items: center;
+    padding: calc(12px * var(--font-scale-factor)) 0;
+    margin-bottom: calc(20px * var(--font-scale-factor)); /* Keep some margin */
+    font-size: calc(1em * var(--font-scale-factor)); /* Scale with container */
+    color: #ccc;
+    /* REMOVE dotted border */
+    border-bottom: none; /* Changed from 1px dashed #444; */
+    transition: padding 0.3s ease-out, margin-bottom 0.3s ease-out, font-size 0.3s ease-out;
+}
+.high-score-entry:last-child { border-bottom: none; margin-bottom: 0; }
+
+.high-score-entry .test-title {
+    font-size: calc(1.1em * var(--font-scale-factor)); /* Scale title */
+    font-weight: bold; color: #ddd;
+    margin-bottom: calc(10px * var(--font-scale-factor));
+    transition: font-size 0.3s ease-out, margin-bottom 0.3s ease-out;
+}
+
+.high-score-entry .score-details { display: flex; flex-direction: column; align-items: center; width: 100%; }
+
+/* --- General Star Rating Styling --- */
+/* Applied via class, so it's consistent */
+.stars-container {
+    display: inline-block; position: relative;
+    line-height: 1; vertical-align: middle;
+    margin: calc(8px * var(--font-scale-factor)) 0; /* Use standard margin */
+    /* Base size uses the container's scale factor */
+    /* Increased base size slightly */
+    --star-base-size: calc(2.8em * var(--font-scale-factor)); /* Increased from 2.5em */
+    --star-mid-scale: 1.15; /* Keep the same scale for the middle star */
+    --star-empty-color: rgba(255, 255, 255, 0.15);
+    --star-fill-color: gold;
+    --star-glow-color-rgb: 255, 215, 0;
+    transition: font-size 0.3s ease-out, margin 0.3s ease-out; /* Added margin transition */
+}
+
+/* --- REMOVE Overrides for Star Size in High Score Panel ---
+   We want it to use the general style above now.
+#high-scores-area .stars-container {
+    --star-base-size: calc(3.5em * var(--font-scale-factor)); // Removed
+    margin: calc(15px * var(--font-scale-factor)) 0; // Removed, use default
+}
+*/
+
+.stars-background, .stars-foreground { display: block; white-space: nowrap; }
+.stars-background { color: var(--star-empty-color); }
+.stars-foreground {
+    position: absolute; top: 0; left: 0;
+    color: var(--star-fill-color);
+    overflow: hidden; width: 0%; /* Set by JS */
+    transition: width 0.4s ease-out, color 0.4s ease-out;
+}
+
+.stars-container .star {
+    display: inline-block;
+    font-size: var(--star-base-size);
+    text-shadow: none;
+    transition: transform 0.3s ease-out, text-shadow 0.4s ease-out;
+    font-family: 'Segoe UI Symbol', 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif;
+    padding: 0 1px;
+}
+
+/* Glow style applied by JS */
+.stars-container .star.glow {
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.6),
+                 0 0 10px rgba(var(--star-glow-color-rgb), 0.9),
+                 0 0 15px rgba(var(--star-glow-color-rgb), 0.7);
+}
+
+/* Angry Birds Style - Middle star bigger */
+.stars-container .star-2 {
+    font-size: calc(var(--star-base-size) * var(--star-mid-scale));
+    transform: translateY(calc(-0.05 * var(--star-base-size)));
+}
+
+/* Rainbow effect for 100% */
+.stars-container.rainbow-stars .stars-foreground {
+    color: transparent;
+    background: linear-gradient(to right, #ff3030, #ffae30, #ffff30, #30ff30, #30ffff, #3030ff, #ae30ff);
+    -webkit-background-clip: text; background-clip: text;
+}
+.stars-container.rainbow-stars .stars-foreground .star.glow {
+     text-shadow: 0 0 8px rgba(255, 255, 255, 0.9),
+                  0 0 15px rgba(255, 255, 255, 0.7);
+}
+/* --- End Star Styling --- */
+
+
+.high-score-entry .score-total-grade {
+    font-size: calc(1em * var(--font-scale-factor)); /* Scale with container */
+    color: #fff;
+    margin-top: calc(10px * var(--font-scale-factor));
+    text-align: center;
+    transition: font-size 0.3s ease-out, margin-top 0.3s ease-out;
+}
+.high-score-entry .score-text, .high-score-entry .grade-text { font-weight: normal; color: inherit; }
+
+/* --- Rest of the styles (buttons, quiz elements, etc. inside .quiz-container) --- */
+/* (These remain largely the same, using quiz-container's scale factor) */
+
+h1 {
+    color: #ffffff;
+    font-size: calc(2.2em * var(--font-scale-factor));
+    margin-bottom: calc(15px * var(--font-scale-factor));
+    transition: font-size 0.3s ease-out, margin-bottom 0.3s ease-out;
+}
+
+p { /* Default paragraph style within quiz-container */
+    color: #ccc;
+    font-size: calc(1.1em * var(--font-scale-factor));
+    margin-bottom: calc(25px * var(--font-scale-factor));
+    transition: font-size 0.3s ease-out, margin-bottom 0.3s ease-out;
+}
+
+#result-text { /* Inside end-screen */
+    font-size: calc(1.3em * var(--font-scale-factor));
+    font-weight: bold;
+    color: #ffffff;
+    margin-bottom: calc(30px * var(--font-scale-factor));
+}
+
+h2#question-text { /* Inside quiz-screen */
+    color: #f5f5f5;
+    font-size: calc(1.4em * var(--font-scale-factor));
+    line-height: 1.5;
+    min-height: calc(60px * var(--font-scale-factor));
+    margin-bottom: calc(25px * var(--font-scale-factor));
+    text-align: left;
+    transition: opacity 0.3s ease-in-out, font-size 0.3s ease-out, min-height 0.3s ease-out, margin-bottom 0.3s ease-out;
+}
+h2#question-text.text-fade-out { opacity: 0; }
+h2#question-text.text-fade-in { opacity: 1; }
+
+.btn-stack { /* Inside quiz-screen, start-screen, end-screen */
+    display: flex; flex-direction: column;
+    gap: calc(12px * var(--font-scale-factor));
+    margin-top: calc(20px * var(--font-scale-factor));
+    transition: opacity 0.3s ease-out, gap 0.3s ease-out, margin-top 0.3s ease-out;
+}
+
+.btn { /* General button style */
+    background-color: #333; color: #f0f0f0; border: 1px solid #555;
+    border-radius: calc(8px * var(--font-scale-factor));
+    padding: calc(15px * var(--font-scale-factor)) calc(25px * var(--font-scale-factor));
+    font-size: calc(1.1em * var(--font-scale-factor));
+    cursor: pointer; text-align: left; width: 100%; box-shadow: none;
+    transition: background-color 0.3s ease, transform 0.2s ease, border-color 0.3s ease, font-size 0.3s ease-out, padding 0.3s ease-out, border-radius 0.3s ease-out;
+}
+.btn:hover:not(.disabled):not(.correct):not(.incorrect) { background-color: #444; border-color: #777; transform: translateY(-2px); }
+.btn:active:not(.disabled) { transform: translateY(0); }
+.btn.disabled { pointer-events: none; cursor: default; }
+
+.next-btn { /* Specific to next button inside quiz-screen */
+    display: inline-block; width: auto;
+    padding: calc(15px * var(--font-scale-factor)) calc(40px * var(--font-scale-factor));
+    text-align: center; cursor: pointer; overflow: hidden;
+    margin-top: calc(20px * var(--font-scale-factor)); margin-bottom: calc(10px * var(--font-scale-factor));
+    opacity: 0; visibility: hidden; pointer-events: none;
+    transition: opacity 0.4s ease-out, visibility 0.4s step-end, margin-top 0.3s ease-out, margin-bottom 0.3s ease-out;
+}
+
+/* Unified Button Styles (Start/Retry/Back) */
+#start-full-btn, #start-2025-btn, #start-2024-btn, #retry-btn, #back-to-start-btn, #next-btn {
+    background-color: #F9F6EE; color: #333; border: 1px solid #DCDCDC;
+    padding: calc(12px * var(--font-scale-factor)) calc(30px * var(--font-scale-factor));
+    text-align: center; font-weight: bold; font-size: calc(1.05em * var(--font-scale-factor));
+    border-radius: calc(6px * var(--font-scale-factor)); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, border-color 0.2s ease-in-out, transform 0.1s ease-in-out, box-shadow 0.2s ease-in-out, opacity 0.4s ease-out, visibility 0.4s step-end;
+    display: inline-block; width: auto;
+    margin-top: calc(10px * var(--font-scale-factor)); margin-left: calc(5px * var(--font-scale-factor)); margin-right: calc(5px * var(--font-scale-factor));
+    cursor: pointer; border-color: #DCDCDC;
+}
+/* Hover, Active, Disabled States for Unified Buttons */
+#start-full-btn:hover:not(.disabled), #start-2025-btn:hover:not(.disabled), #start-2024-btn:hover:not(.disabled), #retry-btn:hover:not(.disabled), #back-to-start-btn:hover:not(.disabled), #next-btn:hover:not(.disabled) { background-color: #E8E4D9; border-color: #C0C0C0; color: #111; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); transform: translateY(-1px); }
+#start-full-btn:active:not(.disabled), #start-2025-btn:active:not(.disabled), #start-2024-btn:active:not(.disabled), #retry-btn:active:not(.disabled), #back-to-start-btn:active:not(.disabled), #next-btn:active:not(.disabled) { background-color: #DCDCDC; border-color: #A9A9A9; transform: translateY(0px); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); }
+#start-full-btn.disabled, #start-2025-btn.disabled, #start-2024-btn.disabled, #retry-btn.disabled, #back-to-start-btn.disabled, #next-btn.disabled { background-color: #EAEAEA !important; color: #999 !important; border-color: #DCDCDC !important; box-shadow: none !important; transform: none !important; pointer-events: none; cursor: default; opacity: 0.65 !important; }
+
+/* Next Button Visibility */
+#next-btn { opacity: 0; visibility: hidden; pointer-events: none; }
+#next-btn.visible { opacity: 1; visibility: visible; pointer-events: auto; transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, border-color 0.2s ease-in-out, transform 0.1s ease-in-out, box-shadow 0.2s ease-in-out, opacity 0.4s ease-out, visibility 0s; }
+
+/* Button Feedback Styles & Animations */
+.btn.correct { background-color: #28a745 !important; border-color: #1e7e34 !important; color: white !important; animation: pulse 0.5s; opacity: 1 !important; }
+.btn.incorrect { background-color: #dc3545 !important; border-color: #bd2130 !important; color: white !important; animation: shake 0.5s; opacity: 1 !important; }
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
+@keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } }
+
+#hud { /* Inside quiz-screen */
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: calc(1em * var(--font-scale-factor)); margin-bottom: calc(20px * var(--font-scale-factor));
+    padding-left: calc(10px * var(--font-scale-factor)); padding-right: calc(10px * var(--font-scale-factor));
+    min-height: calc(1.5em * var(--font-scale-factor)); color: #aaa;
+    transition: font-size 0.3s ease-out, margin-bottom 0.3s ease-out, padding 0.3s ease-out, min-height 0.3s ease-out;
+}
+#hud p { margin-bottom: 0; padding-top: calc(2px * var(--font-scale-factor)); padding-bottom: calc(2px * var(--font-scale-factor)); line-height: 1.2; font-size: inherit; transition: padding 0.3s ease-out; }
+#feedback-text { font-weight: bold; font-size: calc(1.1em * var(--font-scale-factor)); text-align: right; transition: opacity 0.3s ease-in-out, font-size 0.3s ease-out; }
+#feedback-text.correct { color: #2ecc71; }
+#feedback-text.incorrect { color: #e74c3c; }
+
+.hidden { display: none !important; }
+
+/* Results List Styling (Inside end-screen) */
+.results-list {
+    margin-top: calc(20px * var(--font-scale-factor)); max-height: calc(300px * var(--font-scale-factor));
+    overflow-y: auto; text-align: left; padding-right: calc(10px * var(--font-scale-factor));
+    scrollbar-width: thin; scrollbar-color: #555 #333;
+    transition: max-height 0.4s ease-in-out, margin-top 0.3s ease-out, padding-right 0.3s ease-out;
+}
+.result-item {
+    background-color: rgba(40, 40, 40, 0.8); border: 1px solid #444; border-radius: calc(8px * var(--font-scale-factor));
+    padding: calc(15px * var(--font-scale-factor)); margin-bottom: calc(15px * var(--font-scale-factor));
+    transition: padding 0.3s ease-out, margin-bottom 0.3s ease-out, border-radius 0.3s ease-out;
+}
+.result-item strong { color: #f5f5f5; font-size: calc(1.1em * var(--font-scale-factor)); display: block; margin-bottom: calc(8px * var(--font-scale-factor)); transition: font-size 0.3s ease-out, margin-bottom 0.3s ease-out; }
+.result-item p { font-size: calc(1em * var(--font-scale-factor)); margin-bottom: calc(5px * var(--font-scale-factor)); color: #ccc; transition: font-size 0.3s ease-out, margin-bottom 0.3s ease-out; }
+.result-item .correct-answer { color: #28a745; font-weight: bold; }
+.result-item .user-answer { font-style: italic; }
+.result-item .user-answer.incorrect { color: #dc3545; font-weight: bold; }
+.results-list::-webkit-scrollbar { width: 8px; }
+.results-list::-webkit-scrollbar-track { background: #333; border-radius: 10px; }
+.results-list::-webkit-scrollbar-thumb { background: #555; border-radius: 10px; }
+.results-list::-webkit-scrollbar-thumb:hover { background: #777; }
+
+/* Start Screen Button Layout (Inside quiz container) */
+#start-screen .btn-stack .btn {
+    width: 80%; max-width: 350px;
+    margin-left: auto; margin-right: auto; display: block;
+    margin-bottom: calc(15px * var(--font-scale-factor)); margin-top: 0;
+    text-align: center;
+}
+
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 950px) { /* Breakpoint where side-by-side becomes too tight */
+    .main-layout-container {
+        flex-direction: column; /* Stack vertically */
+        align-items: center; /* Center items horizontally when stacked */
+        gap: 30px;
+        max-width: 700px;
+    }
+    .quiz-container {
+        max-width: 100%;
+        order: 1; /* Quiz first */
+        flex-basis: auto;
+    }
+    #high-scores-area {
+        max-width: 450px; /* Allow score area to be wider when stacked */
+        width: 90%;
+        order: 2; /* Score panel below quiz */
+        margin-bottom: 20px;
+        flex-basis: auto;
+        /* Now uses same padding as quiz-container, adjusts with scale factor */
+    }
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+    .main-layout-container {
+        max-width: 100%;
+        gap: 20px;
+    }
+    .quiz-container,
+    #high-scores-area { /* Apply reduced padding to both */
+        padding: calc(20px * var(--font-scale-factor)) calc(20px * var(--font-scale-factor));
+        min-height: 250px; /* Adjust min height */
+    }
+     #high-scores-area {
+        max-width: 100%;
+        width: 95%;
+    }
+
+    /* Font sizes inside high-scores-area will now scale via the var */
+    #high-scores-area h2 {
+        font-size: calc(1.3em * var(--font-scale-factor)); /* Example adjustment for smaller screens */
+    }
+     /* Further adjustments if needed based on visual testing */
+}
+
+
+/* Specific Sizing and POSITIONING for High Score Area */
+#high-scores-area {
+    width: 100%;
+    max-width: 300px; /* Adjust if needed */
+    text-align: left;
+    /* Remove min-height or adjust as needed for vertical centering */
+    /* min-height: 300px; */
+
+    /* --- NEW POSITIONING --- */
+    position: fixed;       /* Position relative to the viewport */
+    top: 50%;              /* Position top edge at the vertical midpoint */
+    right: 10%;            /* Distance from the right edge (e.g., 10% of viewport width) */
+    transform: translateY(-50%); /* Shift element up by half its own height to center it */
+
+    /* --- Keep Existing Styling --- */
+    background-color: rgba(30, 30, 30, 0.9);
+    border: 1px solid #333;
+    border-radius: 15px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    z-index: 10;
+    transition: padding 0.3s ease-out, width 0.3s ease-out, top 0.3s ease-out, right 0.3s ease-out, transform 0.3s ease-out; /* Add transform to transition */
+    overflow: hidden;
+    --font-scale-factor: 1;
+    padding: calc(30px * var(--font-scale-factor)) calc(40px * var(--font-scale-factor));
+}

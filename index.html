@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYBR371 Final Exam - Dark</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="main-layout-container">
+
+        <div class="quiz-container" id="quiz-container">
+
+            <div id="start-screen" class="screen active">
+                <h1>CYBR371 Final Exam</h1>
+                <p>Prepare for your Arman's wrath!!</p>
+                <div class="btn-stack" style="margin-top: 20px;">
+                    <button id="start-full-btn" class="btn">"Gold Nuggets" Quiz</button>
+                </div>
+            </div>
+
+            <div id="quiz-screen" class="screen">
+                <div id="hud">
+                    <p id="question-counter"></p>
+                    <p id="feedback-text"></p>
+                </div>
+                <div id="question-answer-container" class="q-a-container">
+                    <h2 id="question-text">Question text goes here</h2>
+                    <div id="answer-buttons" class="btn-stack">
+                        </div>
+                </div>
+                <button id="next-btn" class="btn next-btn">Next Question</button>
+            </div>
+
+            <div id="end-screen" class="screen">
+                <h1>Quiz Finished!</h1>
+                <p id="result-text">Your results will be shown here.</p>
+                <div id="results-list" class="results-list">
+                    </div>
+                <button id="back-to-start-btn" class="btn">Retry</button>
+            </div>
+
+        </div><div id="high-scores-area">
+            <h2>High Score</h2>
+            <div class="high-score-entry" id="high-score-full">
+                <span class="test-title">"Gold Nuggets" Quiz</span>
+                <div class="score-details">
+                    <div class="stars-container">
+                        <div class="stars-background">
+                            <span class="star star-1">★</span><span class="star star-2">★</span><span class="star star-3">★</span>
+                        </div>
+                        <div class="stars-foreground">
+                            <span class="star star-1">★</span><span class="star star-2">★</span><span class="star star-3">★</span>
+                        </div>
+                    </div>
+                    <span class="score-total-grade">
+                        <span class="score-text">N/A</span> (<span class="grade-text"></span>)
+                    </span>
+                </div>
+            </div>
+            </div> <script src="questions.js"></script>
+        </div></div> <script src="script.js"></script>
+</body>
+</html>
